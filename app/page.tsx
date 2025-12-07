@@ -413,7 +413,7 @@ export default function ChessGame() {
                         </span>
                       )}
                       {isLegal && (
-                        <div className={`absolute ${piece ? 'ring-4 ring-red-400 ring-inset w-full h-full' : 'w-3 h-3 rounded-full bg-cyan-400/60'}`} />
+                        <div className={`absolute ${piece ? 'ring-4 ring-cyan-400 ring-inset w-full h-full' : 'w-3 h-3 rounded-full bg-cyan-400/60'}`} />
                       )}
                     </motion.button>
                   );
