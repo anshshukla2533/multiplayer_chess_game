@@ -384,8 +384,8 @@ export default function ChessGame() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Board */}
           <div className="lg:col-span-2">
-            <div className="relative bg-slate-800/50 p-4 rounded-2xl backdrop-blur-xl">
-              <div className="grid grid-cols-8 gap-0 max-w-2xl mx-auto">
+            <div className="relative bg-slate-800/50 p-4 rounded-2xl backdrop-blur-xl border-none outline-none shadow-none">
+              <div className="grid grid-cols-8 gap-0 max-w-2xl mx-auto border-none outline-none shadow-none">
                 {board.map((row, r) => row.map((piece, c) => {
                   const isLight = (r + c) % 2 === 0;
                   const pos = { row: r, col: c };
@@ -400,10 +400,11 @@ export default function ChessGame() {
                       whileTap={{ scale: 0.95 }}
                       onClick={() => handleSquareClick(r, c)}
                       className={`
-                        aspect-square flex items-center justify-center text-4xl lg:text-5xl
+                        aspect-square flex items-center justify-center text-4xl lg:text-5xl border-none outline-none
                         ${isLight ? 'bg-slate-700/40' : 'bg-slate-800/60'}
                         ${isSelected ? 'ring-4 ring-cyan-400 ring-inset' : ''}
                         ${isLast ? 'bg-yellow-500/30' : ''}
+                        ${isLegal && selected ? 'ring-2 ring-blue-400 ring-inset' : ''}
                         hover:brightness-125 transition-all
                       `}
                     >
@@ -411,9 +412,6 @@ export default function ChessGame() {
                         <span className={piece.color === 'w' ? 'text-white' : 'text-yellow-200'}>
                           {getPieceSymbol(piece)}
                         </span>
-                      )}
-                      {isLegal && (
-                        <div className={`absolute ${piece ? 'ring-4 ring-cyan-400 ring-inset w-full h-full' : 'w-3 h-3 rounded-full bg-cyan-400/60'}`} />
                       )}
                     </motion.button>
                   );
