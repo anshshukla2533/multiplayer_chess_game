@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PlayerDisplay } from './components/PlayerDisplay';
 
 // Types
 type PieceType = 'p' | 'n' | 'b' | 'r' | 'q' | 'k';
@@ -195,6 +194,36 @@ export default function ChessGame() {
     return false;
   };
 
+  // AI Move Generator for Black
+  const getAIMove = (b: Board): { from: Position; to: Position } | null => {
+    const allMoves: { from: Position; to: Position }[] = [];
+    
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        if (b[r][c]?.color === 'b') {
+          const moves = getMoves(b, { row: r, col: c });
+          moves.forEach(m => allMoves.push({ from: { row: r, col: c }, to: m }));
+        }
+      }
+    }
+    
+    if (allMoves.length === 0) return null;
+    
+    // Prioritize moves: captures > piece advancement > random
+    const scoredMoves = allMoves.map(m => {
+      const target = b[m.to.row][m.to.col];
+      let score = Math.random() * 10;
+      
+      if (target) score += 100; // Captures
+      if (b[m.from.row][m.from.col]?.type === 'p') score += 5; // Pawn advancement
+      
+      return { move: m, score };
+    });
+    
+    const bestMove = scoredMoves.reduce((best, curr) => curr.score > best.score ? curr : best);
+    return bestMove.move;
+  };
+
   const makeMove = useCallback((from: Position, to: Position, promo?: PieceType) => {
     const newBoard = copyBoard(board);
     const piece = newBoard[from.row][from.col];
@@ -257,6 +286,7 @@ export default function ChessGame() {
 
   const handleSquareClick = (row: number, col: number) => {
     if (gameOver) return;
+    if (turn === 'b') return; // Black AI moves, human can't click
     
     const pos = { row, col };
     const piece = board[row][col];
@@ -295,9 +325,51 @@ export default function ChessGame() {
     setShowPromo(null);
   };
 
+  // AI makes move after white's turn
+  useEffect(() => {
+    if (turn === 'b' && !gameOver) {
+      const timer = setTimeout(() => {
+        const aiMove = getAIMove(board);
+        if (aiMove) {
+          const newBoard = copyBoard(board);
+          const piece = newBoard[aiMove.from.row][aiMove.from.col];
+          if (piece) {
+            const captured = newBoard[aiMove.to.row][aiMove.to.col];
+            const move: Move = { from: aiMove.from, to: aiMove.to, piece: {...piece}, captured };
+            
+            newBoard[aiMove.to.row][aiMove.to.col] = piece;
+            newBoard[aiMove.from.row][aiMove.from.col] = null;
+            
+            setBoard(newBoard);
+            setTurn('w');
+            setSelected(null);
+            setLegalMoves([]);
+            setMoveStack([...moveStack, move]);
+            setLastMove({ from: aiMove.from, to: aiMove.to });
+            setStackAnim('push');
+            setTimeout(() => setStackAnim(null), 300);
+            playSound(captured ? 400 : 300);
+            
+            if (!hasLegalMoves(newBoard, 'w')) {
+              if (isInCheck(newBoard, 'w')) {
+                setGameOver('Checkmate! Black wins!');
+                playSound(600);
+              } else {
+                setGameOver('Stalemate! Draw!');
+              }
+            } else if (isInCheck(newBoard, 'w')) {
+              playSound(500);
+            }
+          }
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [turn, gameOver, board, moveStack]);
+
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-purple-950 to-slate-950 text-white p-4 relative">
-      <PlayerDisplay players={[null, null]} />
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-center mb-8">
           <motion.h1 
@@ -400,7 +472,7 @@ export default function ChessGame() {
             <div className="mt-6 text-center">
               <div className="inline-block px-8 py-4 bg-cyan-500/20 rounded-xl border border-cyan-400/30">
                 <p className="text-sm text-gray-400">Current Turn</p>
-                <p className="text-3xl font-bold">{turn === 'w' ? '⚪ White' : '⚫ Black'}</p>
+                <p className="text-3xl font-bold">{turn === 'w' ? '⚪ White (You)' : '⚫ Black (AI)'}</p>
                 {isInCheck(board, turn) && !gameOver && (
                   <p className="text-red-400 font-bold mt-2">CHECK!</p>
                 )}
