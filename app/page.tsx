@@ -556,6 +556,11 @@ export default function ChessGame() {
             </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="mt-12 text-center text-gray-500 text-sm">
+          <p>Made by Ansh, Shubham, Aniket</p>
+        </div>
       </div>
     </div>
   );
