@@ -462,17 +462,17 @@ export default function ChessGame() {
                 disabled={moveStack.length === 0}
                 className="px-6 py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg font-bold"
               >
-                ⬅ Undo (Pop)
+                Undo (Pop)
               </button>
               <button onClick={reset} className="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-lg font-bold">
-                🔄 Reset
+                Reset
               </button>
             </div>
 
             <div className="mt-6 text-center">
               <div className="inline-block px-8 py-4 bg-cyan-500/20 rounded-xl border border-cyan-400/30">
                 <p className="text-sm text-gray-400">Current Turn</p>
-                <p className="text-3xl font-bold">{turn === 'w' ? '⚪ White (You)' : '⚫ Black (AI)'}</p>
+                <p className="text-3xl font-bold">{turn === 'w' ? 'White (You)' : 'Black (AI)'}</p>
                 {isInCheck(board, turn) && !gameOver && (
                   <p className="text-red-400 font-bold mt-2">CHECK!</p>
                 )}
@@ -493,7 +493,7 @@ export default function ChessGame() {
               <div className="space-y-2 max-h-[600px] overflow-y-auto">
                 {moveStack.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
-                    <p className="text-4xl mb-2">📚</p>
+                    <p className="text-gray-500 mb-2">(empty)</p>
                     <p>Stack is empty</p>
                   </div>
                 ) : (
@@ -530,7 +530,7 @@ export default function ChessGame() {
                             </div>
                             {move.captured && (
                               <div className="mt-1 text-xs text-red-400 flex items-center gap-1">
-                                <span>⚔️ Captured:</span>
+                                <span>Captured:</span>
                                 <span className="text-lg">{getPieceSymbol(move.captured)}</span>
                               </div>
                             )}
