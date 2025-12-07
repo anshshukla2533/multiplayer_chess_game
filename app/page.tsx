@@ -362,7 +362,7 @@ export default function ChessGame() {
             }
           }
         }
-      }, 100);
+      }, 2000); // 2 seconds - realistic thinking time
       
       return () => clearTimeout(timer);
     }
