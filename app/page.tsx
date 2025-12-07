@@ -384,7 +384,7 @@ export default function ChessGame() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Board */}
           <div className="lg:col-span-2">
-            <div className="relative bg-slate-800/50 p-4 rounded-2xl backdrop-blur-xl border border-cyan-500/20">
+            <div className="relative bg-slate-800/50 p-4 rounded-2xl backdrop-blur-xl">
               <div className="grid grid-cols-8 gap-0 max-w-2xl mx-auto">
                 {board.map((row, r) => row.map((piece, c) => {
                   const isLight = (r + c) % 2 === 0;
